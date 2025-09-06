@@ -5,6 +5,29 @@ app_description = "Event Management"
 app_email = "dgxymte@gmail.com"
 app_license = "MIT"
 
+
+fixtures = [
+    {
+        "doctype": "DocType",
+        "filters": [
+            ["name", "in", ["Venue", "Custom Event"]]
+        ]
+    },
+    {
+        "doctype": "Custom Field",
+        "filters": [
+            ["dt", "in", ["Venue", "Custom Event"]]
+        ]
+    },
+    {
+        "doctype": "Client Script",
+        "filters": [
+            ["dt", "in", ["Venue", "Custom Event"]]
+        ]
+    }
+]
+
+
 # Includes in <head>
 # ------------------
 

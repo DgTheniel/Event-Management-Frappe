@@ -1,0 +1,24 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Custom Event",
+  "enabled": 0,
+  "modified": "2025-09-06 17:20:52.205019",
+  "module": null,
+  "name": "Custom Client Script",
+  "script": "frappe.ui.form.on('Custom Event', {\r\n    validate: function(frm) {\r\n        // 1. Validate Event Name is not empty\r\n        if (!frm.doc.event_name) {\r\n            frappe.throw(__('Event Name is required'));\r\n        }\r\n\r\n        // 2. Validate End Date > Start Date\r\n        if (frm.doc.start_date && frm.doc.end_date) {\r\n            if (frm.doc.end_date < frm.doc.start_date) {\r\n                frappe.throw(__('End Date cannot be before Start Date'));\r\n            }\r\n        }\r\n\r\n        // 3. Validate Capacity must be > 0\r\n        if (frm.doc.capacity && frm.doc.capacity <= 0) {\r\n            frappe.throw(__('Capacity must be greater than 0'));\r\n        }\r\n\r\n        // 4. Ensure Status is one of the allowed options\r\n        let allowed_status = [\"Draft\", \"Scheduled\", \"Completed\", \"Cancelled\"];\r\n        if (frm.doc.status && !allowed_status.includes(frm.doc.status)) {\r\n            frappe.throw(__('Invalid Status. Allowed values: Draft, Scheduled, Completed, Cancelled'));\r\n        }\r\n\r\n        // 5. If Venue is linked, validate Event Capacity against Venue Capacity\r\n        if (frm.doc.venue && frm.doc.capacity) {\r\n            frappe.db.get_value(\"Venue\", frm.doc.venue, \"capacity\", (r) => {\r\n                if (r && r.capacity && frm.doc.capacity > r.capacity) {\r\n                    frappe.throw(__('Event Capacity (' + frm.doc.capacity + \r\n                                   ') cannot exceed Venue Capacity (' + r.capacity + ')'));\r\n                }\r\n            });\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Venue",
+  "enabled": 0,
+  "modified": "2025-09-06 17:23:51.233009",
+  "module": null,
+  "name": "Venue Client Script",
+  "script": "frappe.ui.form.on('Venue', {\r\n    validate: function(frm) {\r\n        // Capacity must be > 0\r\n        if (frm.doc.capacity <= 0) {\r\n            frappe.throw(__('Capacity must be greater than 0'));\r\n        }\r\n\r\n        // Validate Email (basic check)\r\n        if (frm.doc.email && !frappe.utils.validate_type(frm.doc.email, \"email\")) {\r\n            frappe.throw(__('Please enter a valid email address'));\r\n        }\r\n\r\n        // Validate Phone (basic regex for digits, +, - allowed)\r\n        if (frm.doc.phone && !/^[\\d+\\- ]{7,15}$/.test(frm.doc.phone)) {\r\n            frappe.throw(__('Please enter a valid phone number (7-15 digits)'));\r\n        }\r\n\r\n        // Coordinates check (if provided, must be within valid ranges)\r\n        if (frm.doc.coordinates && (frm.doc.coordinates < -180 || frm.doc.coordinates > 180)) {\r\n            frappe.throw(__('Coordinates must be between -180 and 180'));\r\n        }\r\n    }\r\n});\r\n",
+  "view": "Form"
+ }
+]
